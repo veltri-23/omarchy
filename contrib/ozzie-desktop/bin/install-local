@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euo pipefail
+APP_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+install -Dm755 "$APP_ROOT/build/ozzie-desktop" "$HOME/.local/share/ozzie-desktop/bin/ozzie-desktop.new"
+mv "$HOME/.local/share/ozzie-desktop/bin/ozzie-desktop.new" "$HOME/.local/share/ozzie-desktop/bin/ozzie-desktop"
+install -d "$HOME/.local/bin"
+cat > "$HOME/.local/bin/ozzie-desktop" <<'LAUNCH'
+#!/bin/bash
+exec "$HOME/.local/share/ozzie-desktop/bin/ozzie-desktop" "$@"
+LAUNCH
+chmod +x "$HOME/.local/bin/ozzie-desktop"
+install -Dm644 "$APP_ROOT/integration/ozzie-desktop.desktop" "$HOME/.local/share/applications/ozzie-desktop.desktop"
+install -Dm644 "$APP_ROOT/assets/ozzie-desktop.png" "$HOME/.local/share/icons/hicolor/192x192/apps/ozzie-desktop.png"
+update-desktop-database "$HOME/.local/share/applications"

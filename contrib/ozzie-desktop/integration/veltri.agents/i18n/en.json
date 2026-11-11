@@ -1,0 +1,8 @@
+{
+  "launchAgent": "Open %1 in a terminal",
+  "launchAccount": "Open this account in a terminal",
+  "launchMuseApp": "Open Muse chat",
+  "museAppDescription": "Your personal AI assistant. Open Muse for chats, account details, and usage.",
+  "launchOzzieApp": "Open Ozzie",
+  "ozzieAppDescription": "Your Dot and plugins, with TuxTerm."
+}

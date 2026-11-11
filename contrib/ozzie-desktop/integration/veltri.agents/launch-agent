@@ -1,0 +1,38 @@
+#!/bin/bash
+# Use the stock Stable launcher for a single chosen agent. No saved default changes.
+agent_to_launch=${1:-}
+shift || exit 2
+case "$agent_to_launch" in
+  agy|claude|codex|copilot|cursor-agent|dsh|devin|grok|hermes|kimi|muse|opencode|qwen) ;;
+  *) echo "Unsupported agent: $agent_to_launch" >&2; exit 2 ;;
+esac
+
+# An account button pins just this launch, without switching future sessions.
+if [[ ${1:-} == "--account" ]]; then
+  account_id=${2:?--account needs an account id}
+  shift 2
+  case "$agent_to_launch" in
+    claude) config_env=CLAUDE_CONFIG_DIR ;;
+    codex) config_env=CODEX_HOME ;;
+    grok) config_env=GROK_HOME ;;
+    *) echo "Account selection is unavailable for $agent_to_launch" >&2; exit 2 ;;
+  esac
+  registry="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/agents/accounts/$agent_to_launch.json"
+  requested_account_home=$(jq -er --arg id "$account_id" '
+    [.accounts[] | select(.id == $id)] |
+    if length != 1 then error("Unknown account")
+    else .[0] |
+      if .primary == true then ""
+      elif (.home | type) == "string" and (.home | startswith("/")) then .home
+      else error("Account has no config home") end
+    end' "$registry") || exit 2
+  # Ignore a parent session's account pin, including for the primary account,
+  # which must use Claude's implicit default rather than an explicit ~/.claude.
+  unset "$config_env" "OMARCHY_AGENT_${agent_to_launch^^}_HOME"
+  omarchy-agent-account-home() { printf '%s' "$requested_account_home"; }
+fi
+
+# The override exists only in this process. The installed launcher still owns
+# terminal styling, CLI flags and the selected subscription account.
+omarchy-default-agent() { printf '%s\n' "$agent_to_launch"; }
+source "$OMARCHY_PATH/bin/omarchy-agent"

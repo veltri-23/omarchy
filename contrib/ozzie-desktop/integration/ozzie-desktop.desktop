@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Ozzie
+Comment=Your Dot and plugins with TuxTerm
+Exec=ozzie-desktop
+Icon=ozzie-desktop
+Terminal=false
+Categories=Network;Chat;
+StartupWMClass=ozzie-desktop

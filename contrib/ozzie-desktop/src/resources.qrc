@@ -1,0 +1,6 @@
+<RCC><qresource prefix="/">
+<file>Main.qml</file><file>Pet.qml</file><file>focus.js</file>
+<file alias="tuxterm-idle.png">../assets/tuxterm-idle.png</file>
+<file alias="ozzie-desktop.png">../assets/ozzie-desktop.png</file>
+<file>i18n/en.json</file>
+</qresource></RCC>

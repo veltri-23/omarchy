@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+APP_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+mkdir -p "$APP_ROOT/build/tests"
+cd "$APP_ROOT/build/tests"
+qmake6 "$APP_ROOT/tests/backend-tests.pro"
+make -j2
+./backend-tests
+env -u DISPLAY -u WAYLAND_DISPLAY QT_QPA_PLATFORM=offscreen QT_QPA_PLATFORMTHEME=generic QT_QUICK_BACKEND=software /usr/lib/qt6/bin/qmltestrunner -input "$APP_ROOT/tests/tst_pet.qml"
