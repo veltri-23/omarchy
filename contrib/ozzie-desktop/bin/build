@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+APP_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+mkdir -p "$APP_ROOT/build"
+cd "$APP_ROOT/build"
+qmake6 "$APP_ROOT/ozzie-desktop.pro"
+make -j2
