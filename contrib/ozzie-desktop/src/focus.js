@@ -5,6 +5,7 @@
   const style = document.createElement('style');
   style.id = 'ozzie-focus-style';
   style.textContent = `
+    html.ozzie-focus [data-ozzie-global-sidebar],
     html.ozzie-focus #stage-slideover-sidebar,
     html.ozzie-focus #sidebar,
     html.ozzie-focus [data-testid="sidebar"],
@@ -13,7 +14,42 @@
     html.ozzie-focus [data-testid="close-sidebar-button"] { display: none !important; }
   `;
   document.documentElement.appendChild(style);
-  const update = () => document.documentElement.classList.toggle('ozzie-focus', focused());
+  // The web app has a global navigation rail branded ChatGPT. Identify
+  // its narrow left-hand container instead of depending only
+  // on framework-generated class names. Stop observing as soon as it is found.
+  let observer;
+  let queued = false;
+  const hideNavigation = () => {
+    queued = false;
+    if (!focused()) return;
+    if (document.querySelector('[data-ozzie-global-sidebar]')) {
+      observer?.disconnect();
+      return;
+    }
+    const navLabel = [...document.querySelectorAll('a,button,span,h1,h2,h3')].find(el =>
+      el.textContent.trim() === 'ChatGPT' && el.getBoundingClientRect().left < 100);
+    if (!navLabel) return;
+    let candidate = null;
+    for (let el = navLabel.parentElement; el && el !== document.body; el = el.parentElement) {
+      const box = el.getBoundingClientRect();
+      if (box.width > 420) break;
+      if (box.width > 40 && box.left < 80 && box.height > innerHeight * .4) candidate = el;
+    }
+    if (candidate) {
+      candidate.setAttribute('data-ozzie-global-sidebar', '');
+      observer?.disconnect();
+    }
+  };
+  const update = () => {
+    document.documentElement.classList.toggle('ozzie-focus', focused());
+    observer?.disconnect();
+    if (!focused()) return;
+    observer = new MutationObserver(() => {
+      if (!queued) { queued = true; requestAnimationFrame(hideNavigation); }
+    });
+    observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+    hideNavigation();
+  };
   update();
   // Follow SPA navigation without scanning chat messages or running a polling timer.
   for (const name of ['pushState','replaceState']) {

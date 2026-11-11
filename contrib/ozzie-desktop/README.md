@@ -22,7 +22,7 @@ Sign in inside the new window. Its profile is separate from Chrome and the full 
 - TuxTerm animates locally at 6 fps; Pause pet stops it. The header pauses when the app loses focus, is hidden, or is minimized.
 - The six-frame 576×104 idle strip occupies approximately 234 KiB when decoded to RGBA, excluding Qt/GPU overhead. The webpage remains the dominant memory cost. The full sprite sheet is not loaded at runtime.
 - Minimizing allows the page to freeze when Chromium recommends it; active audio/calls keep their normal lifecycle. There is no polling timer.
-- The focus script hides known ChatGPT sidebar selectors on Dot/plugin pages. It blocks unrelated same-site navigation links in that focused view. This is UI customization, not a security boundary. Website updates may require selector adjustments.
+- The focus script hides known ChatGPT sidebar selectors and detects the current narrow ChatGPT-branded navigation rail on Dot/plugin pages. Its mutation observer disconnects once the rail is found. It blocks unrelated same-site navigation links in that focused view. This is UI customization, not a security boundary. Website updates may require selector adjustments.
 - Authentication and plugin settings retain their normal pages. External links open in the default browser.
 - This wrapper does not replace ChatGPT's local computer connection.
 
